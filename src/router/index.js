@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../views/Home.vue';
 // import About from '../views/ProductDetails.vue';
 import ProductDetails from '../views/ProductDetails.vue';
+import Login from '../components/Login.vue';
 
 const routes = [
   {
@@ -16,6 +17,9 @@ const routes = [
     component: ProductDetails,
     props: true,
   },
+  {
+    path
+  }
 ];
 
 const router = createRouter({
