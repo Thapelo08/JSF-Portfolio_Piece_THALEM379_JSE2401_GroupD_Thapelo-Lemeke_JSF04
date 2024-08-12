@@ -17,9 +17,10 @@ const routes = [
     component: ProductDetails,
     props: true,
   },
-  {
-    path
-  }
+{
+  path: '/login',
+component: Login,
+},
 ];
 
 const router = createRouter({
