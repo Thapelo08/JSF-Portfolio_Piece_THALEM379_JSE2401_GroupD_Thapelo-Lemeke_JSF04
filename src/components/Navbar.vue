@@ -1,14 +1,14 @@
 <template>
-    <nav class="fixed w-full bg-pink-600 p-4 text-pink-50 shadow-lg">
-        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-            <router-link to="/">
-                <button class="flex items-center space-x-3 rtl:space-x-reverse">
-                    <img src="../assets/online-shop.png" class="h-8" alt="Flowbite Logo" />
-                    <span class="self-center text-2xl font-semibold whitespace-nowrap text-white">
-                        SwiftCart
-                    </span>
-                </button>
-            </router-link>
+  <nav class="fixed w-full bg-pink-600 p-4 text-pink-50 shadow-lg">
+    <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+      <router-link to="/">
+        <button class="flex items-center space-x-3 rtl:space-x-reverse">
+          <img src="../assets/online-shop.png" class="h-8" alt="Flowbite Logo" />
+          <span class="self-center text-2xl font-semibold whitespace-nowrap text-white">
+            SwiftCart
+          </span>
+        </button>
+      </router-link>
             
         <!-- Navigation links for larger screens -->
         <div class="hidden md:flex">
