@@ -23,7 +23,18 @@ const routes = [
     props: true,
     meta: { requiresAuth: true },
   },
+  {
+    path: '/wihslist',
+    name: 'wishlist',
+    component: () => import('../views/wishlist.vue'), 
+  },
+  {
+    path: '/cart',
+    name: 'cart',
+    component: () => import('../views/Cart.vue'),
+  },
 ];
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
