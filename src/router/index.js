@@ -1,29 +1,28 @@
 // src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../views/Home.vue';
-// import About from '../views/ProductDetails.vue';
 import ProductDetails from '../views/ProductDetails.vue';
 import Login from '../views/Login.vue';
 
 const routes = [
-{
-  path: '/login',
-  name: 'Login',
-component: Login,
-},
-
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login,
+  },
   {
     path: '/',
     name: 'Home',
     component: Home,
+    meta: { requiresAuth: true },
   },
   {
     path: '/product/:id',
     name: 'ProductDetails',
     component: ProductDetails,
     props: true,
+    meta: { requiresAuth: true },
   },
-
 ];
 
 const router = createRouter({
@@ -31,5 +30,14 @@ const router = createRouter({
   routes,
 });
 
-export default router;
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = !!localStorage.getItem('token');
+  
+  if (to.matched.some(record => record.meta.requiresAuth) && !isAuthenticated) {
+    next({ name: 'Login', query: { redirect: to.fullPath } });
+  } else {
+    next();
+  }
+});
 
+export default router;
