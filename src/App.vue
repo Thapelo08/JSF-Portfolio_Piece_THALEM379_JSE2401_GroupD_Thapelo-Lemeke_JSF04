@@ -1,34 +1,52 @@
 <template>
   <div>
-    <!-- Render the Navbar component -->
     <Navbar />
-
-    <!-- Render the content for the current route -->
+    <div v-if="isLoggedIn" class="logout-container">
+      <button @click="logout">Logout</button>
+    </div>
     <router-view />
   </div>
 </template>
 
 <script>
-/**
- * @fileoverview This is the main layout component for the application.
- * It includes a Navbar and a router-view for rendering matched components based on the current route.
- */
-
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import Navbar from './components/Navbar.vue';
 
-/**
- * Main layout component for the application.
- * It includes the Navbar component and the router-view.
- *
- * @component
- */
 export default {
   components: {
-    /** 
-     * The Navbar component used for navigation throughout the app.
-     * @type {import('./components/Navbar.vue').default}
-     */
     Navbar
+  },
+  setup() {
+    const isLoggedIn = ref(false);
+    const router = useRouter();
+
+    const checkLoginStatus = () => {
+      isLoggedIn.value = !!localStorage.getItem('token');
+    };
+
+    const logout = () => {
+      localStorage.removeItem('token');
+      isLoggedIn.value = false;
+      router.push('/login');
+    };
+
+    onMounted(() => {
+      checkLoginStatus();
+    });
+
+    return {
+      isLoggedIn,
+      logout
+    };
   }
 };
 </script>
+
+<style scoped>
+.logout-container {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+</style>
