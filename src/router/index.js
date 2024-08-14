@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../views/Home.vue';
 import ProductDetails from '../views/ProductDetails.vue';
 import Login from '../views/Login.vue';
+import ComparisonList from '../views/ComparisonList.vue';
 
 const routes = [
   {
