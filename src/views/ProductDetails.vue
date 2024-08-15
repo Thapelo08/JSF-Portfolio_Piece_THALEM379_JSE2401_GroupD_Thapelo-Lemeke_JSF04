@@ -25,25 +25,24 @@
         </div>
         <p class="mt-2 text-gray-700 mb-3">⭐ {{ product.rating?.rate }}</p>
         <p class="mt-1 text-gray-700 mb-3">Reviews: {{ product.rating?.count }}</p>
+        <!-- Add to Comparison button -->
+        <button 
+          @click="toggleComparison" 
+          class="mt-3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          {{ isInComparison ? 'Remove from Comparison' : 'Add to Comparison' }}
+        </button>
       </div>
     </div>
   </main>
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
-
-/**
- * @fileoverview This component fetches and displays the details of a single product based on its ID.
- */
+import { ref, onMounted, computed } from 'vue';
 
 export default {
   name: 'ProductDetail',
   
-  /**
-   * @type {Object}
-   * @property {string | number} id - The ID of the product to display details for.
-   */
   props: {
     id: {
       type: [String, Number],
@@ -52,29 +51,11 @@ export default {
   },
 
   setup(props) {
-    /**
-     * Reactive reference for holding product details.
-     * @type {import('vue').Ref<Object>}
-     */
     const product = ref({});
-
-    /**
-     * Reactive reference for tracking error messages.
-     * @type {import('vue').Ref<string | null>}
-     */
     const error = ref(null);
-
-    /**
-     * Reactive reference for tracking loading state.
-     * @type {import('vue').Ref<boolean>}
-     */
     const loading = ref(false);
+    const comparisonList = ref([]);
 
-    /**
-     * Fetches product details from the API.
-     * @param {string | number} productId - The ID of the product to fetch details for.
-     * @returns {Promise<{response: Object | null, error: string | null}>} An object containing the response data and error message.
-     */
     const getProductDetails = async (productId) => {
       try {
         const response = await fetch(`https://fakestoreapi.com/products/${productId}`);
@@ -88,10 +69,19 @@ export default {
       }
     };
 
-    /**
-     * Lifecycle hook that runs when the component is mounted.
-     * It fetches the product details based on the provided ID and updates the component state.
-     */
+    const isInComparison = computed(() => {
+      return comparisonList.value.some(item => item.id === product.value.id);
+    });
+
+    const toggleComparison = () => {
+      if (isInComparison.value) {
+        comparisonList.value = comparisonList.value.filter(item => item.id !== product.value.id);
+      } else {
+        comparisonList.value.push(product.value);
+      }
+      localStorage.setItem('comparisonList', JSON.stringify(comparisonList.value));
+    };
+
     onMounted(async () => {
       loading.value = true;
       const { response, error: fetchError } = await getProductDetails(props.id);
@@ -101,12 +91,20 @@ export default {
         product.value = response;
       }
       loading.value = false;
+
+      // Load comparison list from localStorage
+      const storedComparisonList = localStorage.getItem('comparisonList');
+      if (storedComparisonList) {
+        comparisonList.value = JSON.parse(storedComparisonList);
+      }
     });
 
     return {
       product,
       error,
-      loading
+      loading,
+      isInComparison,
+      toggleComparison
     };
   }
 };
