@@ -12,6 +12,7 @@
 
       <!-- Navigation links for larger screens -->
       <div class="hidden md:flex items-center">
+        <router-link to="/comparison" class="mr-4 hover:underline">Comparison</router-link>
         <router-link to="/wishlist" class="mr-4 hover:underline">Wishlist</router-link>
         <router-link to="/cart" class="mr-4 hover:underline">Cart</router-link>
         <router-link v-if="!isLoggedIn" to="/login" class="hover:underline" @click="toggleMenu">Login</router-link>
@@ -28,6 +29,7 @@
 
     <!-- Mobile menu for smaller screens -->
     <div v-if="open" class="md:hidden mt-4 bg-pink-500">
+      <router-link to="/comparison" class="block p-2 hover:bg-pink-400">Comparison</router-link>
       <router-link to="/wishlist" class="block p-2 hover:bg-pink-400">Wishlist</router-link>
       <router-link to="/cart" class="block p-2 hover:bg-pink-400">Cart</router-link>
       <router-link v-if="!isLoggedIn" to="/login" class="block p-2 hover:bg-pink-400" @click="toggleMenu">Login</router-link>
