@@ -74,12 +74,14 @@ export default {
     });
 
     const toggleComparison = () => {
-      if (isInComparison.value) {
-        comparisonList.value = comparisonList.value.filter(item => item.id !== product.value.id);
+      const comparisonList = JSON.parse(localStorage.getItem('comparisonList') || '[]');
+      if (!comparisonList.some(item => item.id === product.value.id)) {
+        comparisonList.push(product.value);
+        localStorage.setItem('comparisonList', JSON.stringify(comparisonList));
+        alert('Product added to comparison list!');
       } else {
-        comparisonList.value.push(product.value);
+        alert('This product is already in your comparison list.');
       }
-      localStorage.setItem('comparisonList', JSON.stringify(comparisonList.value));
     };
 
     onMounted(async () => {
