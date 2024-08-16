@@ -14,7 +14,10 @@
       <div class="hidden md:flex items-center">
         <router-link to="/comparison" class="mr-4 hover:underline">Comparison</router-link>
         <router-link to="/wishlist" class="mr-4 hover:underline">Wishlist</router-link>
-        <router-link to="/cart" class="mr-4 hover:underline">Cart</router-link>
+        <router-link to="/cart" class="mr-4 hover:underline">
+          Cart ({{ cartItemCount }})
+
+        </router-link>
         <router-link v-if="!isLoggedIn" to="/login" class="hover:underline" @click="toggleMenu">Login</router-link>
         <button v-else="isLoggedIn" @click="logout" class="hover:underline">Logout</button>
       </div>
@@ -41,12 +44,14 @@
 <script>
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { useCart } from '../composables/useCart';
 
 export default {
   name: 'Navbar',
   setup() {
     const open = ref(false);
     const router = useRouter();
+    const { getCartItemCount } = useCart();
 
     // Check if user is logged in
     const isLoggedIn = computed(() => !!localStorage.getItem('token'));
