@@ -69,6 +69,7 @@
        * @type {import('vue').Ref<number[]>}
        */
       const favorites = ref([]);
+      const { addToCart } = useCart();
       
   
       /**
@@ -109,7 +110,8 @@
       return {
         favorites,
         toggleFavorite,
-        isFavorite
+        isFavorite,
+        addToCart
       };
     }
   };
