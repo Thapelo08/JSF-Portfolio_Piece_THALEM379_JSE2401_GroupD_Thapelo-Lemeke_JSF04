@@ -29,7 +29,7 @@
               </svg>
             </button>
             <!-- Button to add the product to the cart (no functionality in this snippet) -->
-            <button class="bg-pink-500 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-75 transition duration-200">
+            <button @click.prevent="addToCart(product)" class="bg-pink-500 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-75 transition duration-200">
               Add To Cart +
             </button>
           </div>
@@ -40,8 +40,9 @@
   
   <script>
   import { ref, onMounted } from 'vue';
-  import { useRoute } from 'vue-router'; // Import vue-router to handle routing
-  
+  import { useRoute } from 'vue-router';  // Import vue-router to handle routing
+  import { useCart } from '../composables/useCart';
+
   /**
    * @fileoverview This component displays a grid of products with options to view details, toggle favorites, and add to cart.
    * It interacts with localStorage to persist favorite products.
@@ -68,6 +69,7 @@
        * @type {import('vue').Ref<number[]>}
        */
       const favorites = ref([]);
+      
   
       /**
        * Lifecycle hook that runs when the component is mounted.
