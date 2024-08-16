@@ -55,6 +55,7 @@ export default {
 
     // Check if user is logged in
     const isLoggedIn = computed(() => !!localStorage.getItem('token'));
+    const cartItemCount = computed(() => getCartItemCount());
 
     const toggleMenu = () => {
       open.value = !open.value;
@@ -70,6 +71,7 @@ export default {
       toggleMenu,
       isLoggedIn,
       logout,
+      cartItemCount
     };
   },
 };
