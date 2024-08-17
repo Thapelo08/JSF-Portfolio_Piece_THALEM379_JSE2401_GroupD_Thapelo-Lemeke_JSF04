@@ -1,20 +1,15 @@
 <template>
   <main>
-    <!-- Display error message if there's an error -->
     <div v-if="error" class="flex justify-center p-5">
       <Error :message="error" />
     </div>
-    <!-- Display loading state while data is being fetched -->
     <div v-else-if="loading" class="flex justify-center p-5">
       <LoadingState />
     </div>
-    <!-- Display product details if available -->
     <div v-else class="grid m-10 space-y-5">
-      <!-- Back button to navigate to the homepage -->
       <a href="/">
         <button class="bg-gray-500 text-white py-2 px-4 rounded">Back</button>
       </a>
-      <!-- Product detail section -->
       <div v-if="product" class="flex flex-col items-center bg-white border-2 border-gray-500 p-4">
         <img :src="product.image" :alt="product.title" class="object-contain h-48 mt-3 mb-3" />
         <h1 class="text-lg line-clamp-2 font-extrabold leading-snug text-slate-600">{{ product.title }}</h1>
@@ -25,14 +20,13 @@
         </div>
         <p class="mt-2 text-gray-700 mb-3">⭐ {{ product.rating?.rate }}</p>
         <p class="mt-1 text-gray-700 mb-3">Reviews: {{ product.rating?.count }}</p>
-        <!-- Add to Comparison button -->
         <button 
           @click="toggleComparison" 
           class="mt-3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          :disabled="isComparisonFull && !isInComparison(product.id)"
         >
-          {{ isInComparison ? 'Remove from Comparison' : 'Add to Comparison' }}
+          {{ isInComparison(product.id) ? 'Remove from Comparison' : 'Add to Comparison' }}
         </button>
-        <!-- Add to Cart button -->
         <button 
           @click="addToCart(product)" 
           class="mt-3 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
@@ -46,7 +40,8 @@
 
 <script>
 import { ref, onMounted, computed } from 'vue';
-import { useCart } from '../composables/useCart'; // Import the useCart composable
+import { useCart } from '../composables/useCart';
+import { useComparison } from '../composables/useComparison';
 
 export default {
   name: 'ProductDetail',
@@ -62,9 +57,11 @@ export default {
     const product = ref({});
     const error = ref(null);
     const loading = ref(false);
-    const comparisonList = ref([]);
 
-    const { addToCart } = useCart(); // Use the addToCart function from useCart composable
+    const { addToCart } = useCart();
+    const { addToComparison, removeFromComparison, isInComparison, getComparisonList } = useComparison();
+
+    const isComparisonFull = computed(() => getComparisonList.value.length >= 4);
 
     const getProductDetails = async (productId) => {
       try {
@@ -79,18 +76,11 @@ export default {
       }
     };
 
-    const isInComparison = computed(() => {
-      return comparisonList.value.some(item => item.id === product.value.id);
-    });
-
     const toggleComparison = () => {
-      const comparisonList = JSON.parse(localStorage.getItem('comparisonList') || '[]');
-      if (!comparisonList.some(item => item.id === product.value.id)) {
-        comparisonList.push(product.value);
-        localStorage.setItem('comparisonList', JSON.stringify(comparisonList));
-        alert('Product added to comparison list!');
-      } else {
-        alert('This product is already in your comparison list.');
+      if (isInComparison(product.value.id)) {
+        removeFromComparison(product.value.id);
+      } else if (getComparisonList.value.length < 4) {
+        addToComparison(product.value);
       }
     };
 
@@ -103,12 +93,6 @@ export default {
         product.value = response;
       }
       loading.value = false;
-
-      // Load comparison list from localStorage
-      const storedComparisonList = localStorage.getItem('comparisonList');
-      if (storedComparisonList) {
-        comparisonList.value = JSON.parse(storedComparisonList);
-      }
     });
 
     return {
@@ -116,8 +100,9 @@ export default {
       error,
       loading,
       isInComparison,
+      isComparisonFull,
       toggleComparison,
-      addToCart // Return addToCart function
+      addToCart
     };
   }
 };
