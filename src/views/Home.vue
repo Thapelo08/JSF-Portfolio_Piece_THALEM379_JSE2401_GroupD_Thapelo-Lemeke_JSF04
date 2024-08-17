@@ -3,7 +3,7 @@
     <!-- Filters and sorting controls -->
     <div class="mt-20 flex justify-between items-center flex-wrap mb-4">
       <!-- Category selection dropdown -->
-      <select v-model="selectedCategory" class="border p-2 rounded mb-2 sm:mb-0">
+      <select v-model="selectedCategory" class="border p-2 rounded mb-2 sm:mb-0" :class="{ 'bg-white text-black': !isDarkMode, 'bg-gray-700 text-white': isDarkMode }">
         <option value="">All Categories</option>
         <option v-for="category in categories" :key="category" :value="category">
           {{ category }}
@@ -17,17 +17,19 @@
           v-model="searchQuery"
           placeholder="Search products..."
           class="border p-2 rounded-l"
+          :class="{ 'bg-white text-black': !isDarkMode, 'bg-gray-700 text-white': isDarkMode }"
         />
         <button
           @click="searchProducts"
-          class="bg-white text-black border border-l-0 p-2 rounded-r"
+          class="border border-l-0 p-2 rounded-r"
+          :class="{ 'bg-white text-black': !isDarkMode, 'bg-gray-700 text-white': isDarkMode }"
         >
           Search
         </button>
       </div>
 
       <!-- Sorting dropdown -->
-      <select v-model="sortOrder" class="border p-2 rounded">
+      <select v-model="sortOrder" class="border p-2 rounded" :class="{ 'bg-white text-black': !isDarkMode, 'bg-gray-700 text-white': isDarkMode }">
         <option value="">Sort by Price</option>
         <option value="default">Default</option>
         <option value="asc">Lowest to Highest</option>
@@ -43,13 +45,9 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, inject } from 'vue';
 import Loading from '../components/Loading.vue';
 import ProductGrid from '../components/ProductGrid.vue';
-
-/**
- * @fileoverview This component fetches and displays a list of products with options for filtering, searching, and sorting.
- */
 
 export default {
   components: {
@@ -58,47 +56,17 @@ export default {
   },
 
   setup() {
-    /**
-     * Reactive reference to the list of products.
-     * @type {import('vue').Ref<Array<Product>>}
-     */
+    const isDarkMode = inject('isDarkMode');
+    
+    // Reactive references
     const products = ref([]);
-
-    /**
-     * Reactive reference to the list of product categories.
-     * @type {import('vue').Ref<Array<string>>}
-     */
     const categories = ref([]);
-
-    /**
-     * Reactive reference to the search query input value.
-     * @type {import('vue').Ref<string>}
-     */
     const searchQuery = ref('');
-
-    /**
-     * Reactive reference to the selected category filter value.
-     * @type {import('vue').Ref<string>}
-     */
     const selectedCategory = ref('');
-
-    /**
-     * Reactive reference to the sorting order value.
-     * @type {import('vue').Ref<string>}
-     */
     const sortOrder = ref('');
-
-    /**
-     * Reactive reference to the loading state.
-     * @type {import('vue').Ref<boolean>}
-     */
     const loading = ref(true);
 
-    /**
-     * Fetches the list of products from the API and updates the products ref.
-     * Sets the loading state to false once data is loaded.
-     * @async
-     */
+    // Fetch products from API
     const fetchProducts = async () => {
       loading.value = true;
       const response = await fetch('https://fakestoreapi.com/products');
@@ -107,29 +75,19 @@ export default {
       loading.value = false;
     };
 
-    /**
-     * Fetches the list of product categories from the API and updates the categories ref.
-     * @async
-     */
+    // Fetch categories from API
     const fetchCategories = async () => {
       const response = await fetch('https://fakestoreapi.com/products/categories');
       const data = await response.json();
       categories.value = data;
     };
 
-    /**
-     * Triggered when the search button is clicked.
-     * This function does not perform any additional actions as the filtering is handled by the computed property.
-     */
+    // Search products - triggers recalculation of computed property
     const searchProducts = () => {
-      // This will trigger the computed property to recalculate
+      // Computed property will handle filtering and sorting
     };
 
-    /**
-     * Computed property that returns the filtered and sorted list of products based on
-     * selected category, search query, and sorting order.
-     * @returns {Array<Product>} The filtered and sorted list of products.
-     */
+    // Computed property for filtered and sorted products
     const filteredProducts = computed(() => {
       let prods = products.value;
 
@@ -152,10 +110,7 @@ export default {
       return prods;
     });
 
-    /**
-     * Lifecycle hook that runs when the component is mounted.
-     * It fetches the products and categories data.
-     */
+    // Lifecycle hook for initial data fetching
     onMounted(() => {
       fetchProducts();
       fetchCategories();
@@ -169,8 +124,13 @@ export default {
       sortOrder,
       loading,
       searchProducts,
-      filteredProducts
+      filteredProducts,
+      isDarkMode
     };
   }
 };
 </script>
+
+<style scoped>
+/* Add any additional styles here */
+</style>

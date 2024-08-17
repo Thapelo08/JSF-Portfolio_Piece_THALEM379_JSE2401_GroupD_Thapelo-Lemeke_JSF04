@@ -1,11 +1,7 @@
-/**
- * @fileoverview The entry point for the Vue.js application. This file initializes and mounts the Vue application.
- * @module main
- */
-
-import { createApp } from 'vue'; // Import the createApp function from Vue
-import App from './App.vue'; // Import the root App component
-import router from './router'; // Import the Vue Router instance
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from './router';
+import './style.css'; // Import Tailwind CSS
 
 /**
  * Creates and mounts the Vue.js application.
@@ -16,6 +12,11 @@ import router from './router'; // Import the Vue Router instance
  * @function
  * @returns {void}
  */
-createApp(App)
-  .use(router) // Register the router instance
-  .mount('#app'); // Mount the Vue app to the DOM
+const app = createApp(App);
+
+app.use(router); // Register the router instance
+
+// Provide isDarkMode globally if needed
+app.provide('isDarkMode', App.setup().isDarkMode);
+
+app.mount('#app'); // Mount the Vue app to the DOM
