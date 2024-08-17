@@ -1,7 +1,8 @@
 // src/composables/useCart.js
 import { ref, watch } from 'vue';
+import { jwtDecode }  from 'jwt-decode';
 
-const cart = ref([]);
+const cart = ref({});
 
 // Load cart from localStorage on initialization
 if (localStorage.getItem('cart')) {
@@ -14,30 +15,83 @@ watch(cart, (newCart) => {
 }, { deep: true });
 
 export function useCart() {
+  const getUserId = () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const decoded = jwtDecode(token);
+      return decoded.sub || decoded.userId; // Adjust based on your JWT structure
+    }
+    return null;
+  };
+
   const addToCart = (product) => {
-    const existingItem = cart.value.find(item => item.id === product.id);
+    const userId = getUserId();
+    if (!userId) return;
+
+    if (!cart.value[userId]) {
+      cart.value[userId] = [];
+    }
+
+    const existingItem = cart.value[userId].find(item => item.id === product.id);
     if (existingItem) {
       existingItem.quantity += 1;
     } else {
-      cart.value.push({ ...product, quantity: 1 });
+      cart.value[userId].push({ ...product, quantity: 1 });
     }
   };
 
   const removeFromCart = (productId) => {
-    const index = cart.value.findIndex(item => item.id === productId);
+    const userId = getUserId();
+    if (!userId || !cart.value[userId]) return;
+
+    const index = cart.value[userId].findIndex(item => item.id === productId);
     if (index !== -1) {
-      cart.value.splice(index, 1);
+      cart.value[userId].splice(index, 1);
+    }
+  };
+
+  const updateQuantity = (productId, quantity) => {
+    const userId = getUserId();
+    if (!userId || !cart.value[userId]) return;
+
+    const item = cart.value[userId].find(item => item.id === productId);
+    if (item) {
+      item.quantity = Math.max(1, quantity);
+    }
+  };
+
+  const clearCart = () => {
+    const userId = getUserId();
+    if (userId) {
+      cart.value[userId] = [];
     }
   };
 
   const getCartItemCount = () => {
-    return cart.value.reduce((total, item) => total + item.quantity, 0);
+    const userId = getUserId();
+    if (!userId || !cart.value[userId]) return 0;
+    return cart.value[userId].reduce((total, item) => total + item.quantity, 0);
+  };
+
+  const getCartTotal = () => {
+    const userId = getUserId();
+    if (!userId || !cart.value[userId]) return 0;
+    return cart.value[userId].reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+  };
+
+  const getUserCart = () => {
+    const userId = getUserId();
+    return userId ? cart.value[userId] || [] : [];
   };
 
   return {
     cart,
     addToCart,
     removeFromCart,
-    getCartItemCount
+    updateQuantity,
+    clearCart,
+    getCartItemCount,
+    getCartTotal,
+    getUserCart
   };
 }

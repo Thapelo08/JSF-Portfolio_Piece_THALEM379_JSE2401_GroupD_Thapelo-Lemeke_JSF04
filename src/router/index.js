@@ -25,14 +25,16 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/wihslist',
+    path: '/wishlist',
     name: 'wishlist',
     component: () => import('../views/wishlist.vue'), 
+    meta: { requiresAuth: true }, // Assuming this also requires authentication
   },
   {
     path: '/cart',
     name: 'cart',
     component: () => import('../views/Cart.vue'),
+    meta: { requiresAuth: true },
   },
   {
     path: '/comparisonList',
@@ -40,7 +42,6 @@ const routes = [
     component: ComparisonList,
   }
 ];
-
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

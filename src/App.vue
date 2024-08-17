@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Navbar />
+    <Navbar :cartItemCount="cartItemCount" />
     <div v-if="isLoggedIn" class="logout-container">
       <button @click="logout">Logout</button>
     </div>
@@ -9,8 +9,9 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { useCart } from './composables/useCart';
 import Navbar from './components/Navbar.vue';
 
 export default {
@@ -20,6 +21,7 @@ export default {
   setup() {
     const isLoggedIn = ref(false);
     const router = useRouter();
+    const { getCartItemCount } = useCart();
 
     const checkLoginStatus = () => {
       isLoggedIn.value = !!localStorage.getItem('token');
@@ -31,18 +33,20 @@ export default {
       router.push('/login');
     };
 
+    const cartItemCount = computed(() => getCartItemCount());
+
     onMounted(() => {
       checkLoginStatus();
     });
 
     return {
       isLoggedIn,
-      logout
+      logout,
+      cartItemCount
     };
   }
 };
 </script>
-
 <style scoped>
 .logout-container {
   position: absolute;

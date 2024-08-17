@@ -14,12 +14,11 @@
       <div class="hidden md:flex items-center">
         <router-link to="/comparison" class="mr-4 hover:underline">Comparison</router-link>
         <router-link to="/wishlist" class="mr-4 hover:underline">Wishlist</router-link>
-        <router-link to="/cart" class="mr-4 hover:underline">
+        <router-link to="/cart" class="mr-4 hover:underline" v-if="isLoggedIn">
           Cart ({{ cartItemCount }})
-
         </router-link>
         <router-link v-if="!isLoggedIn" to="/login" class="hover:underline" @click="toggleMenu">Login</router-link>
-        <button v-else="isLoggedIn" @click="logout" class="hover:underline">Logout</button>
+        <button v-else @click="logout" class="hover:underline">Logout</button>
       </div>
 
       <!-- Menu toggle button for smaller screens -->
@@ -34,9 +33,11 @@
     <div v-if="open" class="md:hidden mt-4 bg-pink-500">
       <router-link to="/comparison" class="block p-2 hover:bg-pink-400">Comparison</router-link>
       <router-link to="/wishlist" class="block p-2 hover:bg-pink-400">Wishlist</router-link>
-      <router-link to="/cart" class="block p-2 hover:bg-pink-400">Cart</router-link>
+      <router-link to="/cart" class="block p-2 hover:bg-pink-400" v-if="isLoggedIn">
+        Cart ({{ cartItemCount }})
+      </router-link>
       <router-link v-if="!isLoggedIn" to="/login" class="block p-2 hover:bg-pink-400" @click="toggleMenu">Login</router-link>
-      <button v-else="isLoggedIn" @click="logout" class="block w-full text-left p-2 hover:bg-pink-400">Logout</button>
+      <button v-else @click="logout" class="block w-full text-left p-2 hover:bg-pink-400">Logout</button>
     </div>
   </nav>
 </template>
@@ -48,6 +49,12 @@ import { useCart } from '../composables/useCart';
 
 export default {
   name: 'Navbar',
+  props: {
+    cartItemCount: {
+      type: Number,
+      required: true
+    }
+  },
   setup() {
     const open = ref(false);
     const router = useRouter();
@@ -55,7 +62,6 @@ export default {
 
     // Check if user is logged in
     const isLoggedIn = computed(() => !!localStorage.getItem('token'));
-    const cartItemCount = computed(() => getCartItemCount());
 
     const toggleMenu = () => {
       open.value = !open.value;
@@ -71,8 +77,8 @@ export default {
       toggleMenu,
       isLoggedIn,
       logout,
-      cartItemCount
+      cartItemCount: computed(() => getCartItemCount())
     };
-  },
+  }
 };
 </script>

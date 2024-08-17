@@ -32,6 +32,13 @@
         >
           {{ isInComparison ? 'Remove from Comparison' : 'Add to Comparison' }}
         </button>
+        <!-- Add to Cart button -->
+        <button 
+          @click="addToCart(product)" 
+          class="mt-3 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Add to Cart
+        </button>
       </div>
     </div>
   </main>
@@ -39,6 +46,7 @@
 
 <script>
 import { ref, onMounted, computed } from 'vue';
+import { useCart } from '../composables/useCart'; // Import the useCart composable
 
 export default {
   name: 'ProductDetail',
@@ -55,6 +63,8 @@ export default {
     const error = ref(null);
     const loading = ref(false);
     const comparisonList = ref([]);
+
+    const { addToCart } = useCart(); // Use the addToCart function from useCart composable
 
     const getProductDetails = async (productId) => {
       try {
@@ -106,7 +116,8 @@ export default {
       error,
       loading,
       isInComparison,
-      toggleComparison
+      toggleComparison,
+      addToCart // Return addToCart function
     };
   }
 };
