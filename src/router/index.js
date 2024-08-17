@@ -1,4 +1,3 @@
-// src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../views/Home.vue';
 import ProductDetails from '../views/ProductDetails.vue';
@@ -28,7 +27,7 @@ const routes = [
     path: '/wishlist',
     name: 'wishlist',
     component: () => import('../views/wishlist.vue'), 
-    meta: { requiresAuth: true }, // Assuming this also requires authentication
+    meta: { requiresAuth: true },
   },
   {
     path: '/cart',
@@ -37,9 +36,10 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/comparisonList',
-    name: 'ComparisonList',
+    path: '/comparison',
+    name: 'Comparison',
     component: ComparisonList,
+    meta: { requiresAuth: true },
   }
 ];
 
