@@ -1,50 +1,82 @@
 <template>
-  <div class="container mx-auto p-6">
-    <h1 class="text-2xl font-bold mb-4">Comparison List</h1>
-    
-    <div v-if="comparisonList.length === 0" class="text-gray-500">
-      No products added for comparison.
+  <div class="comparison-list p-4">
+    <h1 class="text-2xl font-bold mb-4">Product Comparison</h1>
+    <div v-if="comparisonItemCount === 0" class="text-center text-gray-500">
+      No products added to comparison yet.
     </div>
-
-    <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div v-for="product in comparisonList" :key="product.id" class="bg-white shadow-md rounded-lg overflow-hidden border p-4">
-        <img :src="product.image" :alt="product.title" class="w-full h-48 object-cover mb-5" />
-        <h3 class="text-lg font-bold mb-2">{{ product.title }}</h3>
-        <p class="text-gray-700 mb-2">${{ product.price }}</p>
-        <p class="text-gray-500 mb-2">{{ product.category }}</p>
-        <p class="text-gray-700 mb-4">Rating: {{ product.rating.rate }} ({{ product.rating.count }} reviews)</p>
-        <button @click="removeFromComparison(product.id)" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-          Remove
-        </button>
-      </div> 
+    <div v-else>
+      <p class="mb-4">Total Items: {{ comparisonItemCount }}</p>
+      <button @click="clearComparison" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mb-4">
+        Clear Comparison
+      </button>
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse border border-gray-300">
+          <thead>
+            <tr>
+              <th class="border border-gray-300 p-2">Specification</th>
+              <th v-for="product in comparisonList" :key="product.id" class="border border-gray-300 p-2">
+                {{ product.title }}
+                <button @click="removeFromComparison(product.id)" class="ml-2 text-red-500 hover:text-red-700">
+                  Remove
+                </button>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="border border-gray-300 p-2 font-bold">Image</td>
+              <td v-for="product in comparisonList" :key="product.id" class="border border-gray-300 p-2">
+                <img :src="product.image" :alt="product.title" class="w-32 h-32 object-contain mx-auto" />
+              </td>
+            </tr>
+            <tr>
+              <td class="border border-gray-300 p-2 font-bold">Description</td>
+              <td v-for="product in comparisonList" :key="product.id" class="border border-gray-300 p-2">
+                {{ product.description }}
+              </td>
+            </tr>
+            <tr>
+              <td class="border border-gray-300 p-2 font-bold">Price</td>
+              <td v-for="product in comparisonList" :key="product.id" class="border border-gray-300 p-2">
+                ${{ product.price }}
+              </td>
+            </tr>
+            <tr>
+              <td class="border border-gray-300 p-2 font-bold">Rating</td>
+              <td v-for="product in comparisonList" :key="product.id" class="border border-gray-300 p-2">
+                {{ product.rating.rate }} ({{ product.rating.count }} reviews)
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
+import { useComparison } from '../composables/useComparison';
 
 export default {
   name: 'ComparisonList',
   setup() {
-    const comparisonList = ref([]);
+    const { getComparisonList, comparisonCount, removeFromComparison, clearComparison, loadComparisonList } = useComparison();
+
+    // Access the value of the computed property
+    const comparisonList = computed(() => getComparisonList.value);
+    const comparisonItemCount = computed(() => comparisonCount.value);
 
     onMounted(() => {
-      const storedComparisonList = localStorage.getItem('comparisonList');
-      if (storedComparisonList) {
-        comparisonList.value = JSON.parse(storedComparisonList);
-      }
+      loadComparisonList();
     });
-
-    const removeFromComparison = (productId) => {
-      comparisonList.value = comparisonList.value.filter(product => product.id !== productId);
-      localStorage.setItem('comparisonList', JSON.stringify(comparisonList.value));
-    };
 
     return {
       comparisonList,
-      removeFromComparison
+      comparisonItemCount,
+      removeFromComparison,
+      clearComparison,
     };
-  }
+  },
 };
 </script>
