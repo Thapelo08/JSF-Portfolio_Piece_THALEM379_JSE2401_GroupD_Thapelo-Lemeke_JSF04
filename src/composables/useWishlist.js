@@ -1,9 +1,9 @@
 // src/composables/useWishlist.js
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
+
+const wishlist = ref([]);
 
 export function useWishlist() {
-  const wishlist = ref([]);
-
   const loadWishlist = () => {
     const savedWishlist = localStorage.getItem('wishlist');
     if (savedWishlist) {
@@ -11,34 +11,24 @@ export function useWishlist() {
     }
   };
 
-  watch(wishlist, (newWishlist) => {
-    localStorage.setItem('wishlist', JSON.stringify(newWishlist));
-  }, { deep: true });
-
-  const addToWishlist = (product) => {
-    if (!wishlist.value.some(item => item.id === product.id)) {
-      wishlist.value.push(product);
-    }
+  const addToWishlist = (item) => {
+    wishlist.value.push(item);
+    saveWishlist();
   };
 
-  const removeFromWishlist = (productId) => {
-    wishlist.value = wishlist.value.filter(item => item.id !== productId);
+  const removeFromWishlist = (itemId) => {
+    wishlist.value = wishlist.value.filter(item => item.id !== itemId);
+    saveWishlist();
   };
 
-  const clearWishlist = () => {
-    wishlist.value = [];
-  };
-
-  const isInWishlist = (productId) => {
-    return wishlist.value.some(item => item.id === productId);
+  const saveWishlist = () => {
+    localStorage.setItem('wishlist', JSON.stringify(wishlist.value));
   };
 
   return {
     wishlist,
     loadWishlist,
     addToWishlist,
-    removeFromWishlist,
-    clearWishlist,
-    isInWishlist
+    removeFromWishlist
   };
 }

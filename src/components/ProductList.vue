@@ -23,7 +23,7 @@
         <!-- Actions: Toggle favorite and Add to Cart buttons -->
         <div class="mt-auto flex justify-evenly items-center">
           <!-- Toggle favorite status button -->
-          <button @click.prevent="toggleFavorite(product.id)" class="">
+          <button @click.prevent="toggleFavorite(product)" class="">
             <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" :class="{'text-gray-300': !isFavorite(product.id), 'text-red-500': isFavorite(product.id)}" class="w-6 h-6" viewBox="0 0 24 24">
               <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
             </svg>
@@ -41,6 +41,7 @@
 <script>
 import { ref, onMounted } from 'vue';
 import { useCart } from '../composables/useCart';
+import { useWishlist } from '../composables/useWishlist';
 
 export default {
   name: 'ProductList',
@@ -50,8 +51,9 @@ export default {
       required: true
     }
   },
-  setup(props) {
+  setup() {
     const favorites = ref([]);
+    const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
     const { addToCart } = useCart();
 
     // Initialize favorites from localStorage
@@ -63,23 +65,23 @@ export default {
     });
 
     // Toggle favorite status
-    const toggleFavorite = (productId) => {
-      const index = favorites.value.indexOf(productId);
-      if (index > -1) {
-        favorites.value.splice(index, 1);
+    const toggleFavorite = (product) => {
+      if (isFavorite(product.id)) {
+        removeFromWishlist(product.id);
+        favorites.value = favorites.value.filter(id => id !== product.id);
       } else {
-        favorites.value.push(productId);
+        addToWishlist(product);
+        favorites.value.push(product.id);
       }
       localStorage.setItem('favorites', JSON.stringify(favorites.value));
     };
 
     // Check if a product is in favorites
     const isFavorite = (productId) => {
-      return favorites.value.includes(productId);
+      return favorites.value.includes(productId) || isInWishlist(productId);
     };
 
     return {
-      favorites,
       toggleFavorite,
       isFavorite,
       addToCart
