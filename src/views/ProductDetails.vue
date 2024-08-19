@@ -34,6 +34,12 @@
           Add to Cart +
         </button>
       </div>
+
+      <!-- Loading indicator -->
+    <Loading v-if="loading" />
+    
+    <!-- Grid of filtered products -->
+    <ProductGrid :products="filteredProducts" v-else />
     </div>
   </main>
 </template>
