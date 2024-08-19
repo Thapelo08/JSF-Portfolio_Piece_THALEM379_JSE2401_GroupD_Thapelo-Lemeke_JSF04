@@ -13,7 +13,9 @@
       <!-- Navigation links for larger screens -->
       <div class="hidden md:flex items-center">
         <router-link to="/comparison" class="mr-4 hover:underline">Comparison</router-link>
-        <router-link to="/wishlist" class="mr-4 hover:underline">Wishlist</router-link>
+        <router-link to="/wishlist" class="mr-4 hover:underline">
+          Wishlist ({{ wishlistCount }})
+        </router-link>
         <router-link to="/cart" class="mr-4 hover:underline" v-if="isLoggedIn">
           Cart ({{ cartItemCount }})
         </router-link>
@@ -42,7 +44,9 @@
     <!-- Mobile menu for smaller screens -->
     <div v-if="open" class="md:hidden mt-4" :class="{ 'bg-pink-500': !isDarkMode, 'bg-gray-700': isDarkMode }">
       <router-link to="/comparison" class="block p-2 hover:bg-pink-400" :class="{ 'hover:bg-pink-400': !isDarkMode, 'hover:bg-gray-600': isDarkMode }">Comparison</router-link>
-      <router-link to="/wishlist" class="block p-2 hover:bg-pink-400" :class="{ 'hover:bg-pink-400': !isDarkMode, 'hover:bg-gray-600': isDarkMode }">Wishlist</router-link>
+      <router-link to="/wishlist" class="block p-2 hover:bg-pink-400" :class="{ 'hover:bg-pink-400': !isDarkMode, 'hover:bg-gray-600': isDarkMode }">
+        Wishlist ({{ wishlistCount }})
+      </router-link>
       <router-link to="/cart" class="block p-2 hover:bg-pink-400" :class="{ 'hover:bg-pink-400': !isDarkMode, 'hover:bg-gray-600': isDarkMode }" v-if="isLoggedIn">
         Cart ({{ cartItemCount }})
       </router-link>
@@ -56,6 +60,7 @@
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCart } from '../composables/useCart';
+import { useWishlist } from '../composables/useWishlist';
 
 export default {
   name: 'Navbar',
@@ -73,9 +78,12 @@ export default {
     const open = ref(false);
     const router = useRouter();
     const { getCartItemCount } = useCart();
+    const { wishlist } = useWishlist();
 
     // Check if user is logged in
     const isLoggedIn = computed(() => !!localStorage.getItem('token'));
+
+    const wishlistCount = computed(() => wishlist.value.length);
 
     const toggleMenu = () => {
       open.value = !open.value;
@@ -91,7 +99,8 @@ export default {
       toggleMenu,
       isLoggedIn,
       logout,
-      cartItemCount: computed(() => getCartItemCount())
+      cartItemCount: computed(() => getCartItemCount()),
+      wishlistCount
     };
   }
 };

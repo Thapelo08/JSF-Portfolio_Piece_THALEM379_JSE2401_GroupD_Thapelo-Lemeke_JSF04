@@ -1,5 +1,23 @@
 <template>
   <div class="container mx-auto p-6">
+    <!-- Wishlist Carousel -->
+    <div v-if="isLoggedIn && wishlist.length > 0" class="mb-8">
+      <h2 class="text-2xl font-bold mb-4">Your Wishlist</h2>
+      <div class="flex overflow-x-auto space-x-4">
+        <div v-for="product in wishlist" :key="product.id" class="flex-none w-64">
+          <div class="border p-4 rounded">
+            <img :src="product.image" :alt="product.title" class="w-full h-48 object-cover mb-2">
+            <h3 class="text-lg font-semibold">{{ product.title }}</h3>
+            <p class="text-gray-600">${{ product.price }}</p>
+            <div class="mt-2 flex justify-between items-center">
+              <WishlistButton :product="product" />
+              <button @click="addToCart(product)" class="bg-green-500 text-white px-2 py-1 rounded text-sm">Add to Cart</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Filters and sorting controls -->
     <div class="mt-20 flex justify-between items-center flex-wrap mb-4">
       <!-- Category selection dropdown -->
@@ -39,6 +57,7 @@
 
     <!-- Loading indicator -->
     <Loading v-if="loading" />
+    
     <!-- Grid of filtered products -->
     <ProductGrid :products="filteredProducts" v-else />
   </div>
@@ -48,13 +67,16 @@
 import { ref, onMounted, computed, inject } from 'vue';
 import Loading from '../components/Loading.vue';
 import ProductGrid from '../components/ProductGrid.vue';
+import WishlistButton from '../components/WishlistButton.vue';
+import { useWishlist } from '../composables/useWishlist';
+import { useCart } from '../composables/useCart';
 
 export default {
   components: {
     Loading,
-    ProductGrid
+    ProductGrid,
+    WishlistButton
   },
-
   setup() {
     const isDarkMode = inject('isDarkMode');
     
@@ -65,6 +87,11 @@ export default {
     const selectedCategory = ref('');
     const sortOrder = ref('');
     const loading = ref(true);
+
+    // Wishlist management
+    const { wishlist, loadWishlist } = useWishlist();
+    const { addToCart } = useCart();
+    const isLoggedIn = computed(() => !!localStorage.getItem('token'));
 
     // Fetch products from API
     const fetchProducts = async () => {
@@ -114,6 +141,7 @@ export default {
     onMounted(() => {
       fetchProducts();
       fetchCategories();
+      loadWishlist(); // Ensure wishlist is loaded
     });
 
     return {
@@ -125,6 +153,9 @@ export default {
       loading,
       searchProducts,
       filteredProducts,
+      wishlist,
+      isLoggedIn,
+      addToCart,
       isDarkMode
     };
   }

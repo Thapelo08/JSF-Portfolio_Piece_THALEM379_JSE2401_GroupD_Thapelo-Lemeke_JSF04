@@ -3,6 +3,7 @@ import Home from '../views/Home.vue';
 import ProductDetails from '../views/ProductDetails.vue';
 import Login from '../views/Login.vue';
 import ComparisonList from '../views/ComparisonList.vue';
+import Wishlist from '../components/Wishlist.vue';
 
 const routes = [
   {
@@ -25,13 +26,13 @@ const routes = [
   },
   {
     path: '/wishlist',
-    name: 'wishlist',
-    component: () => import('../views/wishlist.vue'), 
+    name: 'Wishlist',
+    component: Wishlist, 
     meta: { requiresAuth: true },
   },
   {
     path: '/cart',
-    name: 'cart',
+    name: 'Cart',
     component: () => import('../views/Cart.vue'),
     meta: { requiresAuth: true },
   },

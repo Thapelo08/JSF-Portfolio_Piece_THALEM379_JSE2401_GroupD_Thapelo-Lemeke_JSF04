@@ -19,6 +19,7 @@ import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCart } from './composables/useCart';
 import { useComparison } from './composables/useComparison';
+import { useWishlist } from './composables/useWishlist';
 import Navbar from './components/Navbar.vue';
 
 export default {
@@ -27,10 +28,11 @@ export default {
   },
   setup() {
     const isLoggedIn = ref(false);
+    const isDarkMode = ref(false);
     const router = useRouter();
     const { getCartItemCount } = useCart();
     const { getComparisonList, loadComparisonList } = useComparison();
-    const isDarkMode = ref(false);
+    const { loadWishlist } = useWishlist();
 
     const checkLoginStatus = () => {
       isLoggedIn.value = !!localStorage.getItem('token');
@@ -53,7 +55,8 @@ export default {
     onMounted(() => {
       checkLoginStatus();
       loadComparisonList();
-      
+      loadWishlist();
+
       // Load theme preference from localStorage or use system preference
       const savedTheme = localStorage.getItem('theme');
       if (savedTheme) {
@@ -100,6 +103,7 @@ body {
   top: 10px;
   right: 10px;
 }
+
 .mr-4 {
   margin-right: 1rem;
 }
