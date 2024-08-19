@@ -98,6 +98,30 @@ export default {
 
 <style scoped>
 .card-container {
-  /* Add styles for card-container here if needed */
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
+
+.card-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-container img {
+  transition: transform 0.3s ease-in-out;
+}
+
+.card-container:hover img {
+  transform: scale(1.05);
+}
+
+.card-container h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-container p {
+  margin-bottom: 0.25rem;
+}
+
+/* Add more specific styles as needed */
 </style>
