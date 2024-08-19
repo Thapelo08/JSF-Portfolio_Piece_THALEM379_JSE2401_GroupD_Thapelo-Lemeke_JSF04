@@ -20,16 +20,14 @@
         <p class="text-gray-700 mb-4">
           Rating: {{ product.rating.rate }} ({{ product.rating.count }} reviews)
         </p>
-        <!-- Actions: Toggle favorite and Add to Cart buttons -->
+        <!-- Actions: Toggle wishlist and Add to Cart buttons -->
         <div class="mt-auto flex justify-evenly items-center">
-          <!-- Toggle favorite status button -->
-          <button @click="toggleFavorite(product)" class="">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" :class="{'text-gray-300': !isFavorite(product.id), 'text-red-500': isFavorite(product.id)}" class="w-6 h-6" viewBox="0 0 24 24">
+          <!-- Toggle wishlist status button -->
+          <button @click.prevent="toggleWishlist(product)" class="flex items-center space-x-2 bg-pink-500 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-75 transition duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" :class="{'text-white': !isInWishlist(product.id), 'text-red-300': isInWishlist(product.id)}" class="w-6 h-6" viewBox="0 0 24 24">
               <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
             </svg>
-          </button>
-          <button @click="addToWishlist(product)" class="bg-pink-500 hover:bg-pink-700 text-white font-bold py-2 px-4 round focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opscity-75 transition duration-200">
-            Add to Wishlist
+            <span>{{ isInWishlist(product.id) ? 'Remove from Wishlist' : 'Add to Wishlist' }}</span>
           </button>
           <!-- Button to add the product to the cart -->
           <button @click="addToCart(product)" class="bg-pink-500 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-75 transition duration-200">
@@ -41,10 +39,11 @@
   </div>
 </template>
 
+
 <script>
 import { ref, onMounted } from 'vue';
-import { useCart } from '../composables/useCart';
 import { useWishlist } from '../composables/useWishlist';
+import { useCart } from '../composables/useCart';
 
 export default {
   name: 'ProductList',
@@ -55,9 +54,10 @@ export default {
     }
   },
   setup() {
-    const favorites = ref([]);
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
     const { addToCart } = useCart();
+
+    const favorites = ref([]);
 
     // Initialize favorites from localStorage
     onMounted(() => {
@@ -67,9 +67,9 @@ export default {
       }
     });
 
-    // Toggle favorite status
-    const toggleFavorite = (product) => {
-      if (isFavorite(product.id)) {
+    // Toggle wishlist status
+    const toggleWishlist = (product) => {
+      if (isInWishlist(product.id)) {
         removeFromWishlist(product.id);
         favorites.value = favorites.value.filter(id => id !== product.id);
       } else {
@@ -79,14 +79,9 @@ export default {
       localStorage.setItem('favorites', JSON.stringify(favorites.value));
     };
 
-    // Check if a product is in favorites
-    const isFavorite = (productId) => {
-      return favorites.value.includes(productId) || isInWishlist(productId);
-    };
-
     return {
-      toggleFavorite,
-      isFavorite,
+      toggleWishlist,
+      isInWishlist,
       addToCart
     };
   }
