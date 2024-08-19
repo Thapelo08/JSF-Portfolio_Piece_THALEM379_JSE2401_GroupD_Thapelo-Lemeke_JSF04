@@ -1,17 +1,81 @@
-# SwiftCart
-Introduction
-SwiftCart is a modern e-commerce application designed to provide a seamless shopping experience. This application allows users to browse products, view product details, filter and sort products, and manage a shopping cart. The application is built using Vue.js and integrates with a RESTful API to fetch product data.
+## SwiftCart Store
+SwiftCart is a popular e-ecommerce platform that offers a wide range of products, including clothing, electronics and piurchasing online.The application provides features like product sorting,filtering, comparison and wishlist management, with a focus on a seamless user experience. Built using Vue.js with Tailwind CSS for styling, the application also integrates user authentication and cart management.
 
-# Technologies Used
-Vue.js: A progressive JavaScript framework used for building the user interface.
-Vue Router: The official router for Vue.js that allows navigation between different views or pages in the application.
-Vuex (optional): State management library for Vue.js applications.
-Tailwind CSS: A utility-first CSS framework for styling the application.
-Axios: A promise-based HTTP client for making requests to the REST API.
-ESLint: A tool for identifying and fixing problems in JavaScript code.
+## Table of Contents
 
-# Setup Instructions
-Prerequisites
-Node.js: Ensure you have Node.js installed. You can download it from nodejs.org.
-npm or yarn: Package managers that come with Node.js.
+- Technologies Used
+- Setup Instructions
+- Hosted Application
+- Project Explainer Video
+- Code Repository
+- External Resources
+- Contributions to the Project
+- Online Resources
+
+### Technologies Used
+- Vue.js: The main framework used for building the front-end of the application.
+- Vite: The build tool used instead of Vue CLI for faster and more efficient development.
+- Tailwind CSS: A utility-first CSS framework used for styling the application.
+- Vue Router: For handling client-side routing in the application.
+- FakeStoreAPI: A mock API used to fetch product and category data.
+
+### Setup Instructions
+To run the project locally, follow these steps:
+
+### Clone the repository:
+git clone https://github.com/Thapelo08/New-Final-Portfolio-JSF4 cd swiftcart-store
+
+### Install dependencies:
+Ensure you have Node.js installed, then run: npm install
+
+### Start the development server:
+npm run dev This will start the application in development mode and it should be accessible at http://localhost:5173/.
+
+### Build for production:
+To create a production-ready build: npm run build
+
+### Hosted Application
+The live version of the SwiftCart Store can be accessed at: https://swiftcart-store.example.com
+
+### Project Explainer Video
+A comprehensive video walkthrough of the project is available here: Project Explainer Video
+
+#### Code Repository
+The source code for this project is hosted on GitHub: SwiftCart Store Repository
+
+### External Resources
+
+## Contributions to the Project
+
+# FakeStoreAPI:
+- URL: https://fakestoreapi.com/
+- Contribution: This external API was used to fetch the product and category data displayed in the store. The API provided a range of products with different categories, which were used to showcase the application's filtering, sorting, and product detail features.
+
+# Tailwind CSS Documentation:
+- URL: https://tailwindcss.com/docs
+- Contribution: The Tailwind CSS documentation was referenced extensively to implement the responsive design and utility classes used t hroughout the project.
+
+# Vue.js Documentation:
+- URL: https://vuejs.org/v2/guide/
+- Contribution: The official Vue.js documentation was used to guide the development of the components, reactivity system, and routing in the application.
+
+# Vite Documentation:
+- URL: https://vitejs.dev/guide/
+- Contribution: Vite's documentation was crucial in setting up the build environment and optimizing the development workflow.
+
+### Online Resources
+
+# Stack Overflow:
+- URL: https://stackoverflow.com/users/25120914/rethabile-diale
+- Contribution: Stack Overflow was used to troubleshoot various issues encountered during development, including handling reactivity in Vue.js and debugging Vue Router.
+
+# Claude AI:
+- URL: https://claude.ai/new
+- Contribution: Claude AI was used for brainstorming ideas, refining concepts, and troubleshooting issues during the development of the application.
+
+# LMS Content:
+- URL: https://learn.codespace.co.za/courses/171/modules/603/lessons/2587
+- Contribution: The content from the Learning Management System (LMS) was a key resource for learning and applying best practices in Vue.js and project development.
+
+
 
