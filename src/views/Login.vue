@@ -59,7 +59,7 @@ export default {
   errorMessage.value = '';
 
   try {
-    const response = await fetch('https://fakestoreapi.com/auth/login', {
+    const response = await fetch('https://fakestoreapi.com/users', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
