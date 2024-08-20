@@ -46,11 +46,15 @@
 
 <script>
 import { ref, onMounted, computed } from 'vue';
+import Loading from '../components/Loading.vue';
 import { useCart } from '../composables/useCart';
 import { useComparison } from '../composables/useComparison';
 import { useTheme } from '../composables/useTheme';
 
 export default {
+  components: {
+  Loading,
+  },
   name: 'ProductDetail',
   
   props: {
@@ -63,7 +67,7 @@ export default {
   setup(props) {
     const product = ref({});
     const error = ref(null);
-    const loading = ref(false);
+    const loading = ref(true);
 
     const { addToCart } = useCart();
     const { addToComparison, removeFromComparison, isInComparison, getComparisonList } = useComparison();
@@ -72,6 +76,7 @@ export default {
     const isComparisonFull = computed(() => getComparisonList.value.length >= 4);
 
     const getProductDetails = async (productId) => {
+      loading.value = true;
       try {
         const response = await fetch(`https://fakestoreapi.com/products/${productId}`);
         if (!response.ok) {
@@ -93,7 +98,7 @@ export default {
     };
 
     onMounted(async () => {
-      loading.value = true;
+      loading.value = false;
       const { response, error: fetchError } = await getProductDetails(props.id);
       if (fetchError) {
         error.value = fetchError;
