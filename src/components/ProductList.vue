@@ -23,10 +23,15 @@
         <!-- Actions: WishlistButton and Add to Cart buttons -->
         <div class="mt-auto flex justify-evenly items-center">
           <!-- WishlistButton component -->
-          <WishlistButton :product="product" />
+          <button @click.prevent="toggleWishlist(product)" class="flex items-center space-x-2 bg-pink-500 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-75 transition duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" :class="{'text-white': !isInWishlist(product.id), 'text-red-300': isInWishlist(product.id)}" class="w-6 h-6" viewBox="0 0 24 24">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+            <span>{{ isInWishlist(product.id) ? 'Remove from Wishlist' : 'Add to Wishlist' }}</span>
+          </button>
           <!-- Add to Cart button -->
           <button @click="addToCart(product)" class="bg-pink-500 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-75 transition duration-200">
-            Add To Cart +
+              Add to Card +
           </button>
         </div>
       </div>
@@ -35,14 +40,12 @@
 </template>
 
 <script>
-import { useCart } from '../composables/useCart';
-import WishlistButton from './WishlistButton.vue';  // Import the WishlistButton component
+import { ref, onMounted } from 'vue';
+import { useCart } from '../composables/useCart'; 
+import { useWishlist } from '../composables/useWishlist';
 
 export default {
   name: 'ProductList',
-  components: {
-    WishlistButton  // Register the WishlistButton component
-  },
   props: {
     filteredProducts: {
       type: Array,
@@ -51,10 +54,41 @@ export default {
   },
   setup() {
     const { addToCart } = useCart();
+    const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+    const favorites = ref([]);
+
+    onMounted(() => {
+      const storedFavorites = localStorage.getItem('favorites');
+      if (storedFavorites) {
+        favorites.value = JSON.parse(storedFavorites);
+      }
+    });
+
+    const toggleWishlist = (product) => {
+      const isAlreadyInWishlist = isInWishlist(product.id);
+
+      if (isAlreadyInWishlist) {
+        removeFromWishlist(product.id);
+        favorites.value = favorites.value.filter(id => id !== product.id);
+      } else {
+        addToWishlist(product);
+        favorites.value.push(product.id);
+      }
+
+      localStorage.setItem('favorites', JSON.stringify(favorites.value));
+    };
 
     return {
-      addToCart
+      addToCart,
+      toggleWishlist,
+      isInWishlist
     };
   }
 };
 </script>
+
+<style scoped>
+.product-item {
+  margin-bottom: 20px;
+}
+</style>

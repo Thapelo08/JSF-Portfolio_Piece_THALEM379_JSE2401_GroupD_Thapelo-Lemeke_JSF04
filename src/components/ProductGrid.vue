@@ -26,7 +26,7 @@
 
           <!-- Add to cart button -->
           <button @click="addToCart(product)" class="bg-pink-500 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-75 transition duration-200">
-            Add To Cart +
+            Add To Card +
           </button>
         </div>
       </div>

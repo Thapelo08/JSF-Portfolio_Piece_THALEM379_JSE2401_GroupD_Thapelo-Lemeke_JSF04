@@ -33,7 +33,7 @@
   <script>
   import { computed } from 'vue';
   import { useCart } from '../composables/useCart';
-  
+
   export default {
     name: 'Cart',
     setup() {
