@@ -15,6 +15,7 @@ export function useWishlist() {
     wishlist.value.push(item);
     saveWishlist();
   };
+  
 
   const removeFromWishlist = (itemId) => {
     wishlist.value = wishlist.value.filter(item => item.id !== itemId);
