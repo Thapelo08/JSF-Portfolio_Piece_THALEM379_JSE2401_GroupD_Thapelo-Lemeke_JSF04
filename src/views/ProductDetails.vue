@@ -20,6 +20,47 @@
         </div>
         <p class="mt-2 text-gray-700 dark:text-gray-300 mb-3">⭐ {{ product.rating?.rate }}</p>
         <p class="mt-1 text-gray-700 dark:text-gray-300 mb-3">Reviews: {{ product.rating?.count }}</p>
+        
+        <!-- User Rating and Review Section -->
+        <div v-if="isLoggedIn" class="mt-6 w-full">
+          <h3 class="text-xl font-bold mb-2">Leave a Review</h3>
+          <div class="flex items-center mb-2">
+            <span class="mr-2">Your Rating:</span>
+            <div>
+              <span v-for="star in 5" :key="star" @click="setUserRating(star)" class="cursor-pointer text-2xl">
+                {{ star <= userRating ? '★' : '☆' }}
+              </span>
+            </div>
+          </div>
+          <textarea v-model="userReview" class="w-full p-2 border rounded" placeholder="Write your review here..."></textarea>
+          <button @click="submitReview" class="mt-2 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+            Submit Review
+          </button>
+        </div>
+
+        <!-- Display Reviews -->
+        <div class="mt-6 w-full">
+          <h3 class="text-xl font-bold mb-2">Customer Reviews</h3>
+          <div class="mb-2">
+            <select v-model="sortBy" class="p-2 border rounded">
+              <option value="date">Sort by Date</option>
+              <option value="rating">Sort by Rating</option>
+            </select>
+          </div>
+          <div v-for="review in sortedReviews" :key="review.id" class="border-b py-2">
+            <div class="flex justify-between">
+              <span>{{ review.userName }}</span>
+              <span>{{ formatDate(review.timestamp) }}</span>
+            </div>
+            <div>Rating: {{ '★'.repeat(review.rating) }}{{ '☆'.repeat(5 - review.rating) }}</div>
+            <p>{{ review.comment }}</p>
+            <div v-if="isLoggedIn && review.userId === currentUserId">
+              <button @click="editReview(review)" class="text-blue-500">Edit</button>
+              <button @click="deleteReview(review.id)" class="text-red-500 ml-2">Delete</button>
+            </div>
+          </div>
+        </div>
+
         <button 
           @click="toggleComparison" 
           class="mt-3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -35,11 +76,10 @@
         </button>
       </div>
 
-      <!-- Loading indicator -->
-    <Loading v-if="loading" />
-    
-    <!-- Grid of filtered products -->
-    <ProductGrid :products="filteredProducts" v-else />
+      <!-- Notification component -->
+      <div v-if="notification" class="fixed bottom-5 right-5 bg-green-500 text-white p-4 rounded">
+        {{ notification }}
+      </div>
     </div>
   </main>
 </template>
@@ -53,7 +93,7 @@ import { useTheme } from '../composables/useTheme';
 
 export default {
   components: {
-  Loading,
+    Loading,
   },
   name: 'ProductDetail',
   
@@ -74,6 +114,89 @@ export default {
     const { theme } = useTheme();
 
     const isComparisonFull = computed(() => getComparisonList.value.length >= 4);
+
+    const userRating = ref(0);
+    const userReview = ref('');
+    const reviews = ref([]);
+    const sortBy = ref('date');
+    const notification = ref('');
+    const isLoggedIn = ref(true); // This should be dynamically set based on your auth logic
+    const currentUserId = ref('user123'); // This should be dynamically set to the current user's ID
+
+    const setUserRating = (rating) => {
+      userRating.value = rating;
+    };
+
+    const submitReview = () => {
+      if (userRating.value === 0 || userReview.value.trim() === '') {
+        showNotification('Please provide both a rating and a review.');
+        return;
+      }
+
+      const newReview = {
+        id: Date.now(),
+        userId: currentUserId.value,
+        userName: 'John Doe', // Replace with actual user name
+        productId: props.id,
+        rating: userRating.value,
+        comment: userReview.value,
+        timestamp: new Date().toISOString()
+      };
+
+      reviews.value.push(newReview);
+      saveReviewsToLocalStorage();
+      userRating.value = 0;
+      userReview.value = '';
+      showNotification('Your review has been submitted successfully!');
+    };
+
+    const editReview = (review) => {
+      userRating.value = review.rating;
+      userReview.value = review.comment;
+      deleteReview(review.id);
+    };
+
+    const deleteReview = (reviewId) => {
+      reviews.value = reviews.value.filter(review => review.id !== reviewId);
+      saveReviewsToLocalStorage();
+      showNotification('Your review has been deleted.');
+    };
+
+    const saveReviewsToLocalStorage = () => {
+      localStorage.setItem(`reviews_${props.id}`, JSON.stringify(reviews.value));
+    };
+
+    const loadReviewsFromLocalStorage = () => {
+      const storedReviews = localStorage.getItem(`reviews_${props.id}`);
+      if (storedReviews) {
+        reviews.value = JSON.parse(storedReviews);
+      }
+    };
+
+    const showNotification = (message) => {
+      notification.value = message;
+      setTimeout(() => {
+        notification.value = '';
+      }, 3000);
+    };
+
+    const formatDate = (dateString) => {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    };
+
+    const sortedReviews = computed(() => {
+      return [...reviews.value].sort((a, b) => {
+        if (sortBy.value === 'date') {
+          return new Date(b.timestamp) - new Date(a.timestamp);
+        } else {
+          return b.rating - a.rating;
+        }
+      });
+    });
 
     const getProductDetails = async (productId) => {
       loading.value = true;
@@ -104,6 +227,7 @@ export default {
         error.value = fetchError;
       } else {
         product.value = response;
+        loadReviewsFromLocalStorage(); // Load reviews after product details are fetched
       }
       loading.value = false;
     });
@@ -116,7 +240,20 @@ export default {
       isComparisonFull,
       toggleComparison,
       addToCart,
-      theme
+      theme,
+      userRating,
+      userReview,
+      reviews,
+      sortBy,
+      notification,
+      isLoggedIn,
+      currentUserId,
+      setUserRating,
+      submitReview,
+      editReview,
+      deleteReview,
+      formatDate,
+      sortedReviews
     };
   }
 };
