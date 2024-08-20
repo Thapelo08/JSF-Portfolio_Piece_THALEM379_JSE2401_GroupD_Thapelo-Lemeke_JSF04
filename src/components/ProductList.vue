@@ -20,16 +20,11 @@
         <p class="text-gray-700 mb-4">
           Rating: {{ product.rating.rate }} ({{ product.rating.count }} reviews)
         </p>
-        <!-- Actions: Toggle wishlist and Add to Cart buttons -->
+        <!-- Actions: WishlistButton and Add to Cart buttons -->
         <div class="mt-auto flex justify-evenly items-center">
-          <!-- Toggle wishlist status button -->
-          <button @click.prevent="toggleWishlist(product)" class="flex items-center space-x-2 bg-pink-500 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-75 transition duration-200">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" :class="{'text-white': !isInWishlist(product.id), 'text-red-300': isInWishlist(product.id)}" class="w-6 h-6" viewBox="0 0 24 24">
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-            </svg>
-            <span>{{ isInWishlist(product.id) ? 'Remove from Wishlist' : 'Add to Wishlist' }}</span>
-          </button>
-          <!-- Button to add the product to the cart -->
+          <!-- WishlistButton component -->
+          <WishlistButton :product="product" />
+          <!-- Add to Cart button -->
           <button @click="addToCart(product)" class="bg-pink-500 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-75 transition duration-200">
             Add To Cart +
           </button>
@@ -39,14 +34,15 @@
   </div>
 </template>
 
-
 <script>
-import { ref, onMounted } from 'vue';
-import { useWishlist } from '../composables/useWishlist';
 import { useCart } from '../composables/useCart';
+import WishlistButton from './WishlistButton.vue';  // Import the WishlistButton component
 
 export default {
   name: 'ProductList',
+  components: {
+    WishlistButton  // Register the WishlistButton component
+  },
   props: {
     filteredProducts: {
       type: Array,
@@ -54,34 +50,9 @@ export default {
     }
   },
   setup() {
-    const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
     const { addToCart } = useCart();
 
-    const favorites = ref([]);
-
-    // Initialize favorites from localStorage
-    onMounted(() => {
-      const storedFavorites = localStorage.getItem('favorites');
-      if (storedFavorites) {
-        favorites.value = JSON.parse(storedFavorites);
-      }
-    });
-
-    // Toggle wishlist status
-    const toggleWishlist = (product) => {
-      if (isInWishlist(product.id)) {
-        removeFromWishlist(product.id);
-        favorites.value = favorites.value.filter(id => id !== product.id);
-      } else {
-        addToWishlist(product);
-        favorites.value.push(product.id);
-      }
-      localStorage.setItem('favorites', JSON.stringify(favorites.value));
-    };
-
     return {
-      toggleWishlist,
-      isInWishlist,
       addToCart
     };
   }
