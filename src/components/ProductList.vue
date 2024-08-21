@@ -31,7 +31,7 @@
           </button>
           <!-- Add to Cart button -->
           <button @click="addToCart(product)" class="bg-pink-500 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-opacity-75 transition duration-200">
-              Add to Card +
+              Add to Cart +
           </button>
         </div>
       </div>
@@ -46,6 +46,9 @@ import { useWishlist } from '../composables/useWishlist';
 
 export default {
   name: 'ProductList',
+  /**
+   * @prop {Array<Object>} filteredProducts - An array of product objects to be displayed. Each product should have properties: id, title, image, price, category, and rating.
+   */
   props: {
     filteredProducts: {
       type: Array,
@@ -57,6 +60,10 @@ export default {
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
     const favorites = ref([]);
 
+    /**
+     * Fetches the stored favorites from localStorage when the component is mounted.
+     * @function onMounted
+     */
     onMounted(() => {
       const storedFavorites = localStorage.getItem('favorites');
       if (storedFavorites) {
@@ -64,6 +71,11 @@ export default {
       }
     });
 
+    /**
+     * Toggles the wishlist status of a product.
+     * @function toggleWishlist
+     * @param {Object} product - The product object to be added or removed from the wishlist.
+     */
     const toggleWishlist = (product) => {
       const isAlreadyInWishlist = isInWishlist(product.id);
 
