@@ -46,6 +46,9 @@ export default {
   components: {
     WishlistButton,
   },
+  /**
+   * @prop {Array<Object>} products - An array of product objects to be displayed. Each product should have properties: id, title, image, price, category, and rating.
+   */
   props: {
     products: {
       type: Array,
@@ -56,6 +59,11 @@ export default {
     const { theme } = useTheme();
     const { addToCart } = useCart();
 
+    /**
+     * Adds a product to the cart.
+     * @function addToCart
+     * @param {Object} product - The product object to be added to the cart.
+     */
     return {
       theme,
       addToCart,
@@ -68,7 +76,6 @@ export default {
 .card-container {
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
-
 .card-container:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
@@ -91,3 +98,4 @@ export default {
   margin-bottom: 0.25rem;
 }
 </style>
+ 
