@@ -58,15 +58,30 @@
 import { computed, onMounted } from 'vue';
 import { useComparison } from '../composables/useComparison';
 
+/**
+ * ComparisonList component displays a comparison table of selected products.
+ * @component
+ */
 export default {
   name: 'ComparisonList',
   setup() {
     const { getComparisonList, comparisonCount, removeFromComparison, clearComparison, loadComparisonList } = useComparison();
 
-    // Access the value of the computed property
+    /**
+     * Computed property for the list of products to compare.
+     * @type {import('vue').ComputedRef<Array<Object>>}
+     */
     const comparisonList = computed(() => getComparisonList.value);
+
+    /**
+     * Computed property for the count of items in the comparison list.
+     * @type {import('vue').ComputedRef<number>}
+     */
     const comparisonItemCount = computed(() => comparisonCount.value);
 
+    /**
+     * Loads the comparison list from localStorage when the component is mounted.
+     */
     onMounted(() => {
       loadComparisonList();
     });

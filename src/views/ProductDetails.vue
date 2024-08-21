@@ -91,6 +91,10 @@ import { useCart } from '../composables/useCart';
 import { useComparison } from '../composables/useComparison';
 import { useTheme } from '../composables/useTheme';
 
+/**
+ * ProductDetail component for displaying detailed information about a product.
+ * @component
+ */
 export default {
   components: {
     Loading,
@@ -98,6 +102,11 @@ export default {
   name: 'ProductDetail',
   
   props: {
+    /**
+     * The ID of the product to display.
+     * @type {string | number}
+     * @required
+     */
     id: {
       type: [String, Number],
       required: true
@@ -105,28 +114,106 @@ export default {
   },
 
   setup(props) {
+    /**
+     * Reactive reference for product details.
+     * @type {import('vue').Ref<object>}
+     */
     const product = ref({});
+
+    /**
+     * Reactive reference for error message.
+     * @type {import('vue').Ref<string | null>}
+     */
     const error = ref(null);
+
+    /**
+     * Reactive reference for loading state.
+     * @type {import('vue').Ref<boolean>}
+     */
     const loading = ref(true);
 
+    /**
+     * Function to add a product to the cart.
+     * @type {Function}
+     */
     const { addToCart } = useCart();
+
+    /**
+     * Functions and state for managing product comparisons.
+     * @type {Object}
+     * @property {Function} addToComparison - Adds a product to the comparison list.
+     * @property {Function} removeFromComparison - Removes a product from the comparison list.
+     * @property {Function} isInComparison - Checks if a product is in the comparison list.
+     * @property {Function} getComparisonList - Retrieves the comparison list.
+     */
     const { addToComparison, removeFromComparison, isInComparison, getComparisonList } = useComparison();
+
+    /**
+     * Function and state for managing theme.
+     * @type {Object}
+     * @property {string} theme - Current theme of the application.
+     */
     const { theme } = useTheme();
 
+    /**
+     * Computed property to check if the comparison list is full.
+     * @type {import('vue').ComputedRef<boolean>}
+     */
     const isComparisonFull = computed(() => getComparisonList.value.length >= 4);
 
+    /**
+     * Reactive reference for user rating.
+     * @type {import('vue').Ref<number>}
+     */
     const userRating = ref(0);
+
+    /**
+     * Reactive reference for user review text.
+     * @type {import('vue').Ref<string>}
+     */
     const userReview = ref('');
+
+    /**
+     * Reactive reference for list of reviews.
+     * @type {import('vue').Ref<Array<object>>}
+     */
     const reviews = ref([]);
+
+    /**
+     * Reactive reference for sorting reviews.
+     * @type {import('vue').Ref<string>}
+     */
     const sortBy = ref('date');
+
+    /**
+     * Reactive reference for notification message.
+     * @type {import('vue').Ref<string>}
+     */
     const notification = ref('');
+
+    /**
+     * Reactive reference for user login status.
+     * @type {import('vue').Ref<boolean>}
+     */
     const isLoggedIn = ref(true); // This should be dynamically set based on your auth logic
+
+    /**
+     * Reactive reference for current user's ID.
+     * @type {import('vue').Ref<string>}
+     */
     const currentUserId = ref('user123'); // This should be dynamically set to the current user's ID
 
+    /**
+     * Sets the user's rating for the product.
+     * @param {number} rating - The rating value (1-5 stars).
+     */
     const setUserRating = (rating) => {
       userRating.value = rating;
     };
 
+    /**
+     * Submits the user's review for the product.
+     */
     const submitReview = () => {
       if (userRating.value === 0 || userReview.value.trim() === '') {
         showNotification('Please provide both a rating and a review.');
@@ -150,22 +237,36 @@ export default {
       showNotification('Your review has been submitted successfully!');
     };
 
+    /**
+     * Edits an existing review.
+     * @param {object} review - The review to edit.
+     */
     const editReview = (review) => {
       userRating.value = review.rating;
       userReview.value = review.comment;
       deleteReview(review.id);
     };
 
+    /**
+     * Deletes a review by ID.
+     * @param {number} reviewId - The ID of the review to delete.
+     */
     const deleteReview = (reviewId) => {
       reviews.value = reviews.value.filter(review => review.id !== reviewId);
       saveReviewsToLocalStorage();
       showNotification('Your review has been deleted.');
     };
 
+    /**
+     * Saves reviews to local storage.
+     */
     const saveReviewsToLocalStorage = () => {
       localStorage.setItem(`reviews_${props.id}`, JSON.stringify(reviews.value));
     };
 
+    /**
+     * Loads reviews from local storage.
+     */
     const loadReviewsFromLocalStorage = () => {
       const storedReviews = localStorage.getItem(`reviews_${props.id}`);
       if (storedReviews) {
@@ -173,6 +274,10 @@ export default {
       }
     };
 
+    /**
+     * Shows a notification message.
+     * @param {string} message - The message to display.
+     */
     const showNotification = (message) => {
       notification.value = message;
       setTimeout(() => {
@@ -180,6 +285,11 @@ export default {
       }, 3000);
     };
 
+    /**
+     * Formats a date string into a more readable format.
+     * @param {string} dateString - The date string to format.
+     * @returns {string} The formatted date string.
+     */
     const formatDate = (dateString) => {
       return new Date(dateString).toLocaleDateString('en-US', {
         year: 'numeric',
@@ -188,6 +298,10 @@ export default {
       });
     };
 
+    /**
+     * Computes and sorts the reviews based on the selected sort criteria.
+     * @type {import('vue').ComputedRef<Array<object>>}
+     */
     const sortedReviews = computed(() => {
       return [...reviews.value].sort((a, b) => {
         if (sortBy.value === 'date') {
@@ -198,6 +312,11 @@ export default {
       });
     });
 
+    /**
+     * Fetches product details from the API.
+     * @param {string | number} productId - The ID of the product to fetch.
+     * @returns {Promise<{response: object, error: string | null}>} The API response or error.
+     */
     const getProductDetails = async (productId) => {
       loading.value = true;
       try {
@@ -212,6 +331,9 @@ export default {
       }
     };
 
+    /**
+     * Toggles the product's presence in the comparison list.
+     */
     const toggleComparison = () => {
       if (isInComparison(product.value.id)) {
         removeFromComparison(product.value.id);

@@ -53,6 +53,10 @@ import WishlistButton from '../components/WishlistButton.vue';
 import { useWishlist } from '../composables/useWishlist';
 import { useCart } from '../composables/useCart';
 
+/**
+ * ProductList component for displaying and managing a list of products with search, filter, and sort functionalities.
+ * @component
+ */
 export default {
   components: {
     Loading,
@@ -60,22 +64,73 @@ export default {
     WishlistButton
   },
   setup() {
-    const isDarkMode = inject('isDarkMode');
-    
-    // Reactive references
+    /**
+     * Reactive reference for the list of products.
+     * @type {import('vue').Ref<Array<Object>>}
+     */
     const products = ref([]);
+
+    /**
+     * Reactive reference for the list of categories.
+     * @type {import('vue').Ref<Array<string>>}
+     */
     const categories = ref([]);
+
+    /**
+     * Reactive reference for the search query.
+     * @type {import('vue').Ref<string>}
+     */
     const searchQuery = ref('');
+
+    /**
+     * Reactive reference for the selected category.
+     * @type {import('vue').Ref<string>}
+     */
     const selectedCategory = ref('');
+
+    /**
+     * Reactive reference for the sort order.
+     * @type {import('vue').Ref<string>}
+     */
     const sortOrder = ref('');
+
+    /**
+     * Reactive reference for the loading state.
+     * @type {import('vue').Ref<boolean>}
+     */
     const loading = ref(true);
 
-    // Wishlist management
+    /**
+     * Injected reference for dark mode state.
+     * @type {import('vue').Inject}
+     */
+    const isDarkMode = inject('isDarkMode');
+
+    /**
+     * Provides wishlist management functions and data.
+     * @type {object}
+     * @property {import('vue').Ref<Array<Object>>} wishlist - Reactive reference to the wishlist.
+     * @property {Function} loadWishlist - Function to load the wishlist from localStorage.
+     */
     const { wishlist, loadWishlist } = useWishlist();
+
+    /**
+     * Provides cart management functions.
+     * @type {object}
+     * @property {Function} addToCart - Function to add a product to the cart.
+     */
     const { addToCart } = useCart();
+
+    /**
+     * Computed property to determine if the user is logged in.
+     * @type {import('vue').ComputedRef<boolean>}
+     */
     const isLoggedIn = computed(() => !!localStorage.getItem('token'));
 
-    // Fetch products from API
+    /**
+     * Fetches the list of products from the API and updates the `products` reference.
+     * @async
+     */
     const fetchProducts = async () => {
       loading.value = true;
       const response = await fetch('https://fakestoreapi.com/products');
@@ -84,19 +139,28 @@ export default {
       loading.value = false;
     };
 
-    // Fetch categories from API
+    /**
+     * Fetches the list of categories from the API and updates the `categories` reference.
+     * @async
+     */
     const fetchCategories = async () => {
       const response = await fetch('https://fakestoreapi.com/products/categories');
       const data = await response.json();
       categories.value = data;
     };
 
-    // Search products - triggers recalculation of computed property
+    /**
+     * Triggers a recalculation of the filtered and sorted product list.
+     * This function is bound to the search button.
+     */
     const searchProducts = () => {
-      // Computed property will handle filtering and sorting
+      // The `filteredProducts` computed property will handle filtering and sorting.
     };
 
-    // Computed property for filtered and sorted products
+    /**
+     * Computed property for the filtered and sorted list of products based on user input.
+     * @type {import('vue').ComputedRef<Array<Object>>}
+     */
     const filteredProducts = computed(() => {
       let prods = products.value;
 
@@ -119,11 +183,13 @@ export default {
       return prods;
     });
 
-    // Lifecycle hook for initial data fetching
+    /**
+     * Lifecycle hook that triggers data fetching for products, categories, and wishlist when the component is mounted.
+     */
     onMounted(() => {
       fetchProducts();
       fetchCategories();
-      loadWishlist(); // Ensure wishlist is loaded
+      loadWishlist(); // Ensure the wishlist is loaded
     });
 
     return {
