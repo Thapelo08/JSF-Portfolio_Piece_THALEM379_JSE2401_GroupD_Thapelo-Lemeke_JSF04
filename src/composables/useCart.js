@@ -1,6 +1,6 @@
 // src/composables/useCart.js
 import { ref, watch } from 'vue';
-import { jwtDecode }  from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 
 const cart = ref({});
 
@@ -14,7 +14,17 @@ watch(cart, (newCart) => {
   localStorage.setItem('cart', JSON.stringify(newCart));
 }, { deep: true });
 
+/**
+ * Composable function to manage the shopping cart.
+ * @module useCart
+ * @returns {Object} - The cart management methods and reactive cart state.
+ */
 export function useCart() {
+  /**
+   * Retrieves the user ID from the JWT token stored in localStorage.
+   * @function getUserId
+   * @returns {string|null} - The user ID from the JWT token or null if not found.
+   */
   const getUserId = () => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -24,6 +34,12 @@ export function useCart() {
     return null;
   };
 
+  /**
+   * Adds a product to the cart for the current user.
+   * If the product already exists in the cart, it increases the quantity.
+   * @function addToCart
+   * @param {Object} product - The product object to add to the cart.
+   */
   const addToCart = (product) => {
     const userId = getUserId();
     if (!userId) return;
@@ -40,6 +56,11 @@ export function useCart() {
     }
   };
 
+  /**
+   * Removes a product from the cart for the current user.
+   * @function removeFromCart
+   * @param {string} productId - The ID of the product to remove from the cart.
+   */
   const removeFromCart = (productId) => {
     const userId = getUserId();
     if (!userId || !cart.value[userId]) return;
@@ -50,6 +71,12 @@ export function useCart() {
     }
   };
 
+  /**
+   * Updates the quantity of a product in the cart for the current user.
+   * @function updateQuantity
+   * @param {string} productId - The ID of the product to update.
+   * @param {number} quantity - The new quantity of the product.
+   */
   const updateQuantity = (productId, quantity) => {
     const userId = getUserId();
     if (!userId || !cart.value[userId]) return;
@@ -60,6 +87,10 @@ export function useCart() {
     }
   };
 
+  /**
+   * Clears the cart for the current user.
+   * @function clearCart
+   */
   const clearCart = () => {
     const userId = getUserId();
     if (userId) {
@@ -67,18 +98,33 @@ export function useCart() {
     }
   };
 
+  /**
+   * Retrieves the total item count in the cart for the current user.
+   * @function getCartItemCount
+   * @returns {number} - The total number of items in the cart.
+   */
   const getCartItemCount = () => {
     const userId = getUserId();
     if (!userId || !cart.value[userId]) return 0;
     return cart.value[userId].reduce((total, item) => total + item.quantity, 0);
   };
 
+  /**
+   * Retrieves the total price of items in the cart for the current user.
+   * @function getCartTotal
+   * @returns {string} - The total price of items in the cart, formatted to two decimal places.
+   */
   const getCartTotal = () => {
     const userId = getUserId();
-    if (!userId || !cart.value[userId]) return 0;
+    if (!userId || !cart.value[userId]) return '0.00';
     return cart.value[userId].reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
   };
 
+  /**
+   * Retrieves the cart items for the current user.
+   * @function getUserCart
+   * @returns {Array<Object>} - The list of items in the cart.
+   */
   const getUserCart = () => {
     const userId = getUserId();
     return userId ? cart.value[userId] || [] : [];
