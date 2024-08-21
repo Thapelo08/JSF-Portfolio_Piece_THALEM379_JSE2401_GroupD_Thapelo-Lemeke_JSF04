@@ -28,8 +28,12 @@ git clone https://github.com/Thapelo08/New-Final-Portfolio-JSF4 cd swiftcart-sto
 ### Install dependencies:
 Ensure you have Node.js installed, then run: npm install
 
-### Start the development server:
-npm run dev This will start the application in development mode and it should be accessible at http://localhost:5173/.
+### Link of youtube video
+
+- https://youtu.be/WrtiiFQ-9u0
+
+### Linkk for deployed store
+- https://swift-cart-store.vercel.app/
 
 ### Build for production:
 To create a production-ready build: npm run build
