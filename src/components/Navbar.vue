@@ -64,6 +64,9 @@ import { useWishlist } from '../composables/useWishlist';
 
 export default {
   name: 'Navbar',
+  /**
+   * @prop {Boolean} isDarkMode - Indicates whether dark mode is enabled.
+   */
   props: {
     isDarkMode: {
       type: Boolean,
@@ -76,18 +79,28 @@ export default {
     const { getCartItemCount } = useCart();
     const { wishlist } = useWishlist();
 
-    // Check if user is logged in
+    /**
+     * @constant {ComputedRef<Boolean>} isLoggedIn - Computed property to check if the user is logged in.
+     */
     const isLoggedIn = computed(() => !!localStorage.getItem('token'));
 
-    // Compute wishlist count from the wishlist composable
+    /**
+     * @constant {ComputedRef<Number>} wishlistCount - Computed property for the count of items in the wishlist.
+     */
     const wishlistCount = computed(() => wishlist.value.length);
 
-    // Toggle menu visibility for small screens
+    /**
+     * Toggles the visibility of the menu for small screens.
+     * @function toggleMenu
+     */
     const toggleMenu = () => {
       open.value = !open.value;
     };
 
-    // Logout function
+    /**
+     * Logs out the user by removing the token from localStorage and redirects to the login page.
+     * @function logout
+     */
     const logout = () => {
       localStorage.removeItem('token');
       router.push('/login');
